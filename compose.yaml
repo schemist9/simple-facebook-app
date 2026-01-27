@@ -1,0 +1,26 @@
+services:
+  database:
+    image: postgres
+    container_name: postgres-facebook-nginx
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./tables.sql:/docker-entrypoint-initdb.d/init.sql
+
+  php:
+    build: .
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./src:/var/www/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
