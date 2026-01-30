@@ -3,7 +3,7 @@ FROM php:8.4-fpm
 WORKDIR /var/www/html
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq-dev \
+    && apt-get install -y --no-install-recommends libpq-dev git unzip \
     && docker-php-ext-install pdo_pgsql \
     && apt-get purge -y --auto-remove
 
