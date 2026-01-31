@@ -13,7 +13,7 @@ class User
 
     public function create(array $user): ?string
     {
-        if ($this->emailExists($user['email'])) {
+        if (self::emailExists($user['email'])) {
             $this->errors['email'] = 'Email already exists';
             return null;
         }
@@ -38,11 +38,23 @@ class User
         $stmt = $pdo->prepare($query);
         $stmt->execute([ ':id' => $id ]);
         $res = $stmt->fetch();
+        if (!$res) return null;
         return $res;
     }
 
-    private function emailExists(string $email) 
+    public static function findByEmail(string $email): ?array
     {
-        return false;
+        $pdo = \App\DB::get();
+        $query = 'SELECT * FROM users WHERE email = :email';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([ ':email' => $email ]);
+        $res = $stmt->fetch();
+        if (!$res) return null;
+        return $res;
+    }
+
+    private static function emailExists(string $email) 
+    {
+        return self::findByEmail($email);
     }
 }

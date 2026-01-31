@@ -77,6 +77,44 @@ $app->get('/login', function (Request $request, Response $response) {
     return $view->render($response, 'sessions/new.html');
 });
 
+$app->post('/login', function (Request $request, Response $response) {
+    $requestData = $request->getParsedBody();
+
+    if (!is_array($requestData)) {
+        $response->getBody()->write('Invalid form data');
+        return $response->withStatus(400);
+    }
+
+    $allowedInput = ['email', 'password'];
+
+    foreach ($requestData as $key => $value) {
+        if (!in_array($key, $allowedInput, true)) {
+            $response->getBody()->write('Error');
+            return $response;
+        }
+    }
+
+    $user = User::findByEmail($requestData['email']);
+    $view = Twig::fromRequest($request);
+
+    if (!$user) {
+        return $view->render($response, 'sessions/new.html', [
+            'error' => 'Invalid credentials'
+        ]);
+    }
+
+    if (password_verify($requestData['password'], $user['password_hash'])) {
+        $_SESSION['user_id'] = $user['id'];
+        return $response
+            ->withHeader('Location', '/')
+            ->withStatus(303);
+    } else {
+        return $view->render($response, 'sessions/new.html', [
+            'error' => 'Invalid credentials'
+        ]);
+    }
+});
+
 $app->post('/register', function (Request $request, Response $response) {  
     $requestData = $request->getParsedBody();
 
