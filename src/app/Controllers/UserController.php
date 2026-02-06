@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Controllers;
+
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
+use \App\Helpers\Session;
+
+use Slim\Views\Twig;
+use \App\Models\User;
+use \App\Models\UserValidator;
+
+class UserController
+{
+    public function __construct(private Twig $twig, private User $user)
+    {
+
+    }
+
+    public function show(Request $request, Response $response, array $args) {
+        $id = (int) $args['id'];
+        $user = $this->user::find($id);
+        
+        if (!$user) {
+            return $response->withStatus(404);
+        }
+
+        return $this->twig->render($response, 'users/show.html', [
+            'firstname' => $user['firstname'],
+            'surname' => $user['surname'],
+            'email' => $user['email']
+        ]);
+    }
+
+    public function new(Request $request, Response $response) {
+        if (Session::loggedIn()) {
+            header('Location: /');
+            exit;
+        }
+
+        return $this->twig->render($response, 'users/new.html');
+    }
+
+    public function create(Request $request, Response $response) {  
+        $requestData = $request->getParsedBody();
+
+        if (!is_array($requestData)) {
+            $response->getBody()->write('Invalid form data');
+            return $response->withStatus(400);
+        }
+
+        $allowedInput = ['firstname', 'surname', 'email', 'password'];
+
+        foreach ($requestData as $key => $value) {
+            if (!in_array($key, $allowedInput, true)) {
+                $response->getBody()->write('Error');
+                return $response;
+            }
+        }
+
+        $errors = (new UserValidator())->validate($requestData);
+
+        if (!empty($errors)) {
+            return $this->twig->render($response, 'users/new.html', $errors);
+        }
+
+        $user = (new User());
+        $userId = $user->create($requestData);
+
+        if (!empty($user->errors())) {
+            return $this-twig->render($response, 'users/new.html', $user->errors());
+        }
+
+        $_SESSION['user_id'] = $userId;
+        
+        return $response
+            ->withHeader('Location', '/')
+            ->withStatus(303);
+    }
+}

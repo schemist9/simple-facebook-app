@@ -11,6 +11,7 @@ use App\Models\UserValidator;
 use App\Models\User;
 
 use App\Controllers\SessionController;
+use App\Controllers\UserController;
 
 require '../vendor/autoload.php';
 
@@ -45,74 +46,17 @@ $app->get('/', function (Request $request, Response $response) {
     return $view->render($response, 'users/new.html');
 });
 
-$app->get('/register', function (Request $request, Response $response) {
-    if (App\Helpers\Session::loggedIn()) {
-        header('Location: /');
-        exit;
-    }
-
-    $view = Twig::fromRequest($request);
-    return $view->render($response, 'users/new.html');
-});
+$app->get('/register', [UserController::class, 'new']);
 
 $app->get('/login', [SessionController::class, 'new']);
 $app->post('/login', [SessionController::class, 'create']);
 $app->get('/logout', [SessionController::class, 'destroy']);
 
 
-$app->post('/register', function (Request $request, Response $response) {  
-    $requestData = $request->getParsedBody();
-
-    if (!is_array($requestData)) {
-        $response->getBody()->write('Invalid form data');
-        return $response->withStatus(400);
-    }
-
-    $allowedInput = ['firstname', 'surname', 'email', 'password'];
-
-    foreach ($requestData as $key => $value) {
-        if (!in_array($key, $allowedInput, true)) {
-            $response->getBody()->write('Error');
-            return $response;
-        }
-    }
-
-    $errors = (new UserValidator())->validate($requestData);
-    $view = Twig::fromRequest($request);
-
-    if (!empty($errors)) {
-        return $view->render($response, 'users/new.html', $errors);
-    }
-
-    $user = (new User());
-    $userId = $user->create($requestData);
-
-    if (!empty($user->errors())) {
-        return $view->render($response, 'users/new.html', $user->errors());
-    }
-
-    $_SESSION['user_id'] = $userId;
-    
-    return $response
-        ->withHeader('Location', '/')
-        ->withStatus(303);
-});
+$app->post('/register', [UserController::class, 'create']);
 
 
-$app->get('/users/:id', function (Request $request, Response $response, int $id) {
-    $user = User::find($id);
-    if (!$user) {
-        return $response->withStatus(404);
-    }
-
-    $view = Twig::fromRequest($request);
-
-    return $view->render($response, 'users/show.html', [
-        'firstname' => $user['firstname'],
-        'surname' => $user['surname'],
-        'email' => $user['email']
-    ]);
-});
+$app->get('/users/{id}', [UserController::class, 'show']);
 
 $app->patch('/users/:id', function (Request $request, Response $response, int $id) {
     
