@@ -57,4 +57,9 @@ class User
     {
         return self::findByEmail($email);
     }
+
+    public static function update(int $id, array $data): ?array
+    {
+        
+    }
 }

@@ -5,18 +5,30 @@ use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 
+use DI\Container;
+
 use App\Models\UserValidator;
 use App\Models\User;
+
+use App\Controllers\SessionController;
 
 require '../vendor/autoload.php';
 
 session_start();
+
+$container = new Container();
+
+AppFactory::setContainer($container);
 
 $app = AppFactory::create();
 $app->addRoutingMiddleware();
 $twig = Twig::create(__DIR__ . '/../views', ['cache' => false]);
 $app->add(TwigMiddleware::create($app, $twig));
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+
+$container->set(Twig::class, function() {
+    return Twig::create(__DIR__ . '/../views', ['cache' => false]);
+});
 
 App\App::run();
 $pdo = App\DB::get();
@@ -33,29 +45,6 @@ $app->get('/', function (Request $request, Response $response) {
     return $view->render($response, 'users/new.html');
 });
 
-$app->get('/logout', function (Request $request, Response $response) {
-    if (!App\Helpers\Session::loggedIn()) {
-        header('Location: /');
-        exit;
-    }
-
-    $params = session_get_cookie_params();
-    setcookie(
-        session_name(),
-        '',
-        time() - 1,
-        $params['path'],
-        $params['domain'],
-        $params['secure'],
-        $params['httponly']
-    );
-    session_destroy();
-    
-    return $response
-        ->withHeader('Location', '/')
-        ->withStatus(303);
-});
-
 $app->get('/register', function (Request $request, Response $response) {
     if (App\Helpers\Session::loggedIn()) {
         header('Location: /');
@@ -66,54 +55,10 @@ $app->get('/register', function (Request $request, Response $response) {
     return $view->render($response, 'users/new.html');
 });
 
-$app->get('/login', function (Request $request, Response $response) {
-    if (App\Helpers\Session::loggedIn()) {
-        return $response
-            ->withHeader('Location', '/')
-            ->withStatus(303);
-    }
+$app->get('/login', [SessionController::class, 'new']);
+$app->post('/login', [SessionController::class, 'create']);
+$app->get('/logout', [SessionController::class, 'destroy']);
 
-    $view = Twig::fromRequest($request);
-    return $view->render($response, 'sessions/new.html');
-});
-
-$app->post('/login', function (Request $request, Response $response) {
-    $requestData = $request->getParsedBody();
-
-    if (!is_array($requestData)) {
-        $response->getBody()->write('Invalid form data');
-        return $response->withStatus(400);
-    }
-
-    $allowedInput = ['email', 'password'];
-
-    foreach ($requestData as $key => $value) {
-        if (!in_array($key, $allowedInput, true)) {
-            $response->getBody()->write('Error');
-            return $response;
-        }
-    }
-
-    $user = User::findByEmail($requestData['email']);
-    $view = Twig::fromRequest($request);
-
-    if (!$user) {
-        return $view->render($response, 'sessions/new.html', [
-            'error' => 'Invalid credentials'
-        ]);
-    }
-
-    if (password_verify($requestData['password'], $user['password_hash'])) {
-        $_SESSION['user_id'] = $user['id'];
-        return $response
-            ->withHeader('Location', '/')
-            ->withStatus(303);
-    } else {
-        return $view->render($response, 'sessions/new.html', [
-            'error' => 'Invalid credentials'
-        ]);
-    }
-});
 
 $app->post('/register', function (Request $request, Response $response) {  
     $requestData = $request->getParsedBody();
@@ -151,6 +96,26 @@ $app->post('/register', function (Request $request, Response $response) {
     return $response
         ->withHeader('Location', '/')
         ->withStatus(303);
+});
+
+
+$app->get('/users/:id', function (Request $request, Response $response, int $id) {
+    $user = User::find($id);
+    if (!$user) {
+        return $response->withStatus(404);
+    }
+
+    $view = Twig::fromRequest($request);
+
+    return $view->render($response, 'users/show.html', [
+        'firstname' => $user['firstname'],
+        'surname' => $user['surname'],
+        'email' => $user['email']
+    ]);
+});
+
+$app->patch('/users/:id', function (Request $request, Response $response, int $id) {
+    
 });
 
 // Run app
