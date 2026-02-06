@@ -24,13 +24,17 @@ AppFactory::setContainer($container);
 
 $app = AppFactory::create();
 $app->addRoutingMiddleware();
+
 $twig = Twig::create(__DIR__ . '/../views', ['cache' => false]);
 $app->add(TwigMiddleware::create($app, $twig));
+
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $container->set(Twig::class, function() {
     return Twig::create(__DIR__ . '/../views', ['cache' => false]);
 });
+
+// $app->add(TwigMiddleware::createFromContainer($app, Twig::class));
 
 App\App::run();
 $pdo = App\DB::get();

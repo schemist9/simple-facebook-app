@@ -18,12 +18,9 @@ class IndexController
     }
 
     public function index(Request $request, Response $response) {
-        if (isset($_SESSION['user_id'])) {
-            return $this->twig->render($response, 'index.html', [
-                'loggedIn' => Session::loggedIn()
-            ]);
-        } 
-
-        return $this->twig->render($response, 'users/new.html');
+        $users = User::all();
+        return $this->twig->render($response, 'index.html', [
+            'loggedIn' => Session::loggedIn()
+        ] + [ 'users' => $users ]);
     }
 }

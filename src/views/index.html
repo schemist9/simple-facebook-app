@@ -1,5 +1,18 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1> Hello, {{ firstname  }} {{ surname }}!</h1>
+    <div class="container mt-4">
+        {% if loggedIn %}
+        <h1> Hello, {{ firstname  }} {{ surname }}!</h1>
+        {% endif %}
+
+        Registered users:
+        <ul>
+        {% for user in users %}
+            <li>
+                user: <a href="/users/{{ user.id }}">{{ user.firstname }} {{ user.surname }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

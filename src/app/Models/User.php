@@ -31,6 +31,17 @@ class User
         return $pdo->lastInsertId();
     }
 
+    public static function all(): ?array
+    {
+        $pdo = \App\DB::get();
+        $query = 'SELECT * FROM users';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute();
+        $res = $stmt->fetchAll();
+        if (!$res) return null;
+        return $res;
+    }
+
     public static function find(int $id): ?array
     {
         $pdo = \App\DB::get();
