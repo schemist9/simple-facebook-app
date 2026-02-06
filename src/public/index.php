@@ -12,6 +12,7 @@ use App\Models\User;
 
 use App\Controllers\SessionController;
 use App\Controllers\UserController;
+use App\Controllers\IndexController;
 
 require '../vendor/autoload.php';
 
@@ -34,33 +35,17 @@ $container->set(Twig::class, function() {
 App\App::run();
 $pdo = App\DB::get();
 
-$app->get('/', function (Request $request, Response $response) {
-    $view = Twig::fromRequest($request);
+$app->get('/', [IndexController::class, 'index']);
 
-    if (isset($_SESSION['user_id'])) {
-        return $view->render($response, 'index.html', [
-            'loggedIn' => App\Helpers\Session::loggedIn()
-        ]);
-    } 
-
-    return $view->render($response, 'users/new.html');
-});
-
-$app->get('/register', [UserController::class, 'new']);
 
 $app->get('/login', [SessionController::class, 'new']);
 $app->post('/login', [SessionController::class, 'create']);
 $app->get('/logout', [SessionController::class, 'destroy']);
 
-
+$app->get('/register', [UserController::class, 'new']);
 $app->post('/register', [UserController::class, 'create']);
-
-
 $app->get('/users/{id}', [UserController::class, 'show']);
 
-$app->patch('/users/:id', function (Request $request, Response $response, int $id) {
-    
-});
 
 // Run app
 $app->run();
