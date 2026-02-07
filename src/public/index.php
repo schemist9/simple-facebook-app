@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Controllers\SessionController;
 use App\Controllers\UserController;
 use App\Controllers\IndexController;
+use App\Controllers\PostController;
 
 require '../vendor/autoload.php';
 
@@ -50,6 +51,8 @@ $app->get('/register', [UserController::class, 'new']);
 $app->post('/register', [UserController::class, 'create']);
 $app->get('/users/{id}', [UserController::class, 'show']);
 
+$app->get('/posts/new', [PostController::class, 'new']);
+$app->post('/posts', [PostController::class, 'create']);
 
 // Run app
 $app->run();

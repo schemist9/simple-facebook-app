@@ -8,6 +8,7 @@ use \App\Helpers\Session;
 
 use Slim\Views\Twig;
 use \App\Models\User;
+use \App\Models\Post;
 use \App\Models\UserValidator;
 
 class UserController
@@ -25,10 +26,14 @@ class UserController
             return $response->withStatus(404);
         }
 
+        $posts = Post::getByUserId($id);
+        
         return $this->twig->render($response, 'users/show.html', [
             'firstname' => $user['firstname'],
             'surname' => $user['surname'],
-            'email' => $user['email']
+            'email' => $user['email'],
+            'loggedIn' => Session::loggedIn(),
+            'posts' => $posts
         ]);
     }
 

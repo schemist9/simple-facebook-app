@@ -1,0 +1,31 @@
+<div class="card mb-3 border-0 shadow-sm">
+  <div class="card-body">
+
+    <!-- header -->
+    <div class="d-flex align-items-center mb-2">
+      <img src="/avatar.jpg"
+           class="rounded-circle me-2"
+           width="40"
+           height="40">
+
+      <div class="flex-grow-1">
+        <div class="fw-semibold">{{ post.author_name }} {{ post.author_surname }}</div>
+        <div class="text-muted small">{{ post.created_at|date("F j \\a\\t H:i") }}</div>
+      </div>
+    </div>
+
+    <!-- text -->
+    <div class="mb-2">
+        {{ post.text }}
+    </div>
+
+    <!-- actions -->
+    <div class="border-top pt-2 mt-2">
+      <div class="d-flex justify-content-around text-muted small">
+        <div>Like</div>
+        <div>Comment</div>
+      </div>
+    </div>
+
+  </div>
+</div>

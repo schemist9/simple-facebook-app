@@ -17,7 +17,9 @@ class DB
         $dsn = "pgsql:host=$host;port=$port;dbname=$db";
 
         try {
-            self::$pdo = new \PDO($dsn, $user, $password);
+            self::$pdo = new \PDO($dsn, $user, $password, [
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC
+            ]);
         } catch (PDOException $e) {
             die($e->getMessage());
         }

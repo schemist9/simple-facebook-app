@@ -3,5 +3,11 @@
 {% block content %}
 <div class="container">
     User: {{ firstname }} {{ surname }}
+
+    <div class="posts">
+        {% for post in posts %}
+            {{ include('posts/_user_post.html', { post: post })}}
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

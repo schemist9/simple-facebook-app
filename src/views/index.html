@@ -3,7 +3,11 @@
 {% block content %}
     <div class="container mt-4">
         {% if loggedIn %}
-        <h1> Hello, {{ firstname  }} {{ surname }}!</h1>
+        <div class="mb-2">
+            <h1> Hello, {{ firstname  }} {{ surname }}!</h1>
+
+            Create a new post: <a href="/posts/new">Click</a>
+        </div>
         {% endif %}
 
         Registered users:
