@@ -10,5 +10,23 @@
 <body>
     {% include 'header.html' %}
     {% block content %}{% endblock %}
+
+<script>
+    
+    function formatDate(ts) {
+        const d = new Date(ts);
+
+        const month = d.toLocaleString(undefined, { month: 'long' });
+        const day   = d.getDate();
+        const time  = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+        return `${month} ${day} at ${time}`;
+    }
+
+    document.querySelectorAll('.post-date').forEach(el => {
+        const ts = el.dataset.ts;
+        el.textContent = formatDate(ts);
+    });
+</script>
 </body>
 </html>

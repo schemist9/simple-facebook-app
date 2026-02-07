@@ -38,7 +38,9 @@ class Post
         $stmt->execute([
             ':user_id' => $userId
         ]);
-        return $stmt->fetchAll();
+        $posts = $stmt->fetchAll();
+        
+        return $posts;
     }
     
     public function errors(): array

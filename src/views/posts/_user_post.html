@@ -10,7 +10,7 @@
 
       <div class="flex-grow-1">
         <div class="fw-semibold">{{ post.author_name }} {{ post.author_surname }}</div>
-        <div class="text-muted small">{{ post.created_at|date("F j \\a\\t H:i") }}</div>
+        <div class="text-muted small post-date" data-ts="{{ post.created_at|date('c') }}">{{ post.created_at|date('F j \\a\\t H:i') }}</div>
       </div>
     </div>
 
