@@ -9,30 +9,36 @@ use \App\Helpers\Session;
 use Slim\Views\Twig;
 use \App\Models\User;
 use \App\Models\Post;
+use \App\Models\PostLike;
 use \App\Models\UserValidator;
 
 class UserController
 {
-    public function __construct(private Twig $twig, private User $user)
+    public function __construct(private Twig $twig)
     {
 
     }
 
     public function show(Request $request, Response $response, array $args) {
         $id = (int) $args['id'];
-        $user = $this->user::find($id);
+        $user = User::find($id);
         
         if (!$user) {
             return $response->withStatus(404);
         }
 
-        $posts = Post::getByUserId($id);
+        $posts = Post::getByWallId($id);
+
+        echo '<pre>';
+        var_dump($posts);
+        echo '</pre>';
         
         return $this->twig->render($response, 'users/show.html', [
             'firstname' => $user['firstname'],
             'surname' => $user['surname'],
             'email' => $user['email'],
             'loggedIn' => Session::loggedIn(),
+            'wallUserId' => $id,
             'posts' => $posts
         ]);
     }
@@ -69,11 +75,12 @@ class UserController
             return $this->twig->render($response, 'users/new.html', $errors);
         }
 
-        $user = (new User());
-        $userId = $user->create($requestData);
+        $user = (new User($requestData));
+        
+        $userId = $user->id;
 
         if (!empty($user->errors())) {
-            return $this-twig->render($response, 'users/new.html', $user->errors());
+            return $this->twig->render($response, 'users/new.html', $user->errors());
         }
 
         $_SESSION['user_id'] = $userId;

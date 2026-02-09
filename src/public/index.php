@@ -14,6 +14,7 @@ use App\Controllers\SessionController;
 use App\Controllers\UserController;
 use App\Controllers\IndexController;
 use App\Controllers\PostController;
+use App\Controllers\PostLikeController;
 
 require '../vendor/autoload.php';
 
@@ -35,13 +36,16 @@ $container->set(Twig::class, function() {
     return Twig::create(__DIR__ . '/../views', ['cache' => false]);
 });
 
+$container->set(User::class, function() {
+    return User::class;
+});
+
 // $app->add(TwigMiddleware::createFromContainer($app, Twig::class));
 
 App\App::run();
 $pdo = App\DB::get();
 
 $app->get('/', [IndexController::class, 'index']);
-
 
 $app->get('/login', [SessionController::class, 'new']);
 $app->post('/login', [SessionController::class, 'create']);
@@ -52,7 +56,10 @@ $app->post('/register', [UserController::class, 'create']);
 $app->get('/users/{id}', [UserController::class, 'show']);
 
 $app->get('/posts/new', [PostController::class, 'new']);
-$app->post('/posts', [PostController::class, 'create']);
+$app->post('/users/{user_id}/posts', [PostController::class, 'create']);
+
+$app->post('/posts/{id}/likes', [PostLikeController::class, 'create']);
+$app->delete('/posts/{id}/likes', [PostLikeController::class, 'destroy']);
 
 // Run app
 $app->run();

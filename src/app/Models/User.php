@@ -5,6 +5,12 @@ namespace App\Models;
 class User
 {
     private array $errors = [];
+    public ?int $id = null;
+
+    public function __construct(array $user)
+    {
+        $this->create($user);
+    }
 
     public function errors()
     {
@@ -27,6 +33,8 @@ class User
             ':email' => $user['email'],
             ':password' => password_hash($user['password'], PASSWORD_DEFAULT)
         ]);
+        
+        $this->id = $pdo->lastInsertId();
 
         return $pdo->lastInsertId();
     }

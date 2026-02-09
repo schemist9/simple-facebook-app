@@ -8,9 +8,10 @@ use \App\Helpers\Session;
 
 use Slim\Views\Twig;
 use \App\Models\Post;
+use \App\Models\User;
 use \App\Models\PostValidator;
 
-class PostController
+class PostController extends BaseController
 {
     public function __construct(private Twig $twig)
     {
@@ -26,29 +27,28 @@ class PostController
         return $this->twig->render($response, 'posts/new.html');
     }
 
-    public function create(Request $request, Response $response) {  
+    public function create(Request $request, Response $response, array $args) {  
         if (!Session::loggedIn()) {
-            header('Location: /');
-            exit;
+            return $response
+                ->withHeader('Location', '/')
+                ->withStatus(303);
         }
-
         $requestData = $request->getParsedBody();
+        $errorReponse = $this->filterParams($request, $response, $requestData, ['text']);
 
-        if (!is_array($requestData)) {
-            $response->getBody()->write('Invalid form data');
-            return $response->withStatus(400);
+        if ($errorReponse) {
+            return $errorResponse;
         }
 
-        $allowedInput = ['text'];
-
-        foreach ($requestData as $key => $value) {
-            if (!in_array($key, $allowedInput, true)) {
-                $response->getBody()->write('Error');
-                return $response;
-            }
+        $wallUserId = $args['user_id'];
+        $wallUser = User::find($wallUserId);
+        if (!$wallUser) {
+            return $response
+                ->withHeader('Location', "/users/$wallUserId");
         }
-
-        $requestData['user_id'] = Session::currentUser()['id'];
+        $userId = Session::currentUser();
+        $requestData['user_id'] = $userId;
+        $requestData['user_wall_id'] = $wallUserId;
         $post = (new Post($requestData));
 
         if (!empty($post->errors())) {
@@ -56,7 +56,7 @@ class PostController
         }
         
         return $response
-            ->withHeader('Location', '/')
+            ->withHeader('Location', "/users/$wallUserId")
             ->withStatus(303);
     }
 

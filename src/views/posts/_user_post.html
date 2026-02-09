@@ -1,4 +1,4 @@
-<div class="card mb-3 border-0 shadow-sm">
+<div class="card mb-3 border-0 shadow-sm" data-post-id="{{ post.id }}">
   <div class="card-body">
 
     <!-- header -->
@@ -22,7 +22,12 @@
     <!-- actions -->
     <div class="border-top pt-2 mt-2">
       <div class="d-flex justify-content-around text-muted small">
-        <div>Like</div>
+        <div>
+          <button class="like-button">
+            {{ post.post_likes }}
+            Like
+          </button>
+        </div>
         <div>Comment</div>
       </div>
     </div>

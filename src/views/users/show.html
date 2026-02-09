@@ -4,6 +4,8 @@
 <div class="container">
     User: {{ firstname }} {{ surname }}
 
+    {{ include('posts/new.html') }}
+
     <div class="posts">
         {% for post in posts %}
             {{ include('posts/_user_post.html', { post: post })}}

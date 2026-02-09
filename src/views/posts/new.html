@@ -1,15 +1,13 @@
-{% extends 'layout.html' %}
-
 {% block content %}
 <div class="container mt-2">
-    <form action="/posts" method="post">
+    <form action="/users/{{ wallUserId }}/posts" method="post">
         <div class="mb-3">
             {{ text }}
             <label for="text" class="form-label">Text</label>
             <textarea name="text" id="text" class="form-control"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary">Post</button>
     </form>
 </div>
 {% endblock %}

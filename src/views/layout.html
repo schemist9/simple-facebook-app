@@ -27,6 +27,24 @@
         const ts = el.dataset.ts;
         el.textContent = formatDate(ts);
     });
+
+    const posts = document.querySelector('.posts');
+    posts.addEventListener('click', event => {
+        const post = event.target.closest('[data-post-id]');
+        if (!post) return;
+        if (!event.target.classList.contains('like-button')) return;
+        const postId = post.dataset.postId;
+        if (!postId) return;
+
+        fetch(`/posts/${postId}/likes`, {
+            method: 'POST'
+        }).then(data => {
+            console.log(data);
+            return data.text();
+        }).then(data => {
+            console.log(data);
+        })
+    });
 </script>
 </body>
 </html>

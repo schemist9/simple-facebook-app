@@ -11,6 +11,7 @@ class Session
 
     public static function currentUser()
     {
-        return \App\Models\User::find($_SESSION['user_id']);
+        if (!self::loggedIn()) return null;
+        return \App\Models\User::find($_SESSION['user_id'])['id'];
     }
 }

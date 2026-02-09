@@ -11,7 +11,7 @@ use \App\Models\User;
 
 class SessionController
 {
-    public function __construct(private Twig $twig, private User $user)
+    public function __construct(private Twig $twig)
     {
         
     }
@@ -45,7 +45,7 @@ class SessionController
             }
         }
 
-        $user = $this->user::findByEmail($requestData['email']);
+        $user = User::findByEmail($requestData['email']);
         $view = $this->twig::fromRequest($request);
 
         if (!$user) {
