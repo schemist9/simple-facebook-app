@@ -56,18 +56,44 @@ class Post
         ]);
         $posts = $stmt->fetchAll();
 
+        $postsIds = [];
+        foreach ($posts as $key => $value) {
+            $postsIds[] = $value['id'];
+        }
+
+        $placeholders = str_repeat('?,', count($postsIds) - 1) . '?';
+
 
         $commentsQuery = "
-            SELECT comments.text, comments.user_id, users.firstname, users.surname FROM comments
+            SELECT comments.commentable_id, comments.text, comments.user_id, users.firstname, users.surname FROM comments
                 INNER JOIN users
                     ON users.id = comments.user_id
-                WHERE posts.id = ANY(:post_ids)
+                WHERE 
+                    comments.commentable_type = 'post' 
+                        AND 
+                    comments.commentable_id IN ($placeholders)
         ";
 
         $stmt = $pdo->prepare($commentsQuery);
-        $stmt->execute();
+        $stmt->execute($postsIds);
         $comments = $stmt->fetchAll();
-        
+
+        if (empty($comments)) {
+            return $posts;
+        }
+
+        $commentsByPostId = [];
+
+        foreach ($comments as $key => $value) {
+            $commentsByPostId[$value['commentable_id']][] = $comments[$key];
+        }
+
+        foreach ($posts as $key => $value) {
+            $postId = $value['id'];
+            
+            $posts[$key]['comments'] = $commentsByPostId[$postId] ?? [];
+        }
+
         return $posts;
     }
     

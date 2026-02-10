@@ -27,5 +27,6 @@ CREATE TABLE IF NOT EXISTS comments (
     user_id INT REFERENCES users(id),
     text TEXT NOT NULL,
     commentable_id INT NOT NULL,
-    commentable_type TEXT NOT NULL
+    commentable_type TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );

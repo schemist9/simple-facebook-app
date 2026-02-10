@@ -28,10 +28,6 @@ class UserController
         }
 
         $posts = Post::getByWallId($id);
-
-        echo '<pre>';
-        var_dump($posts);
-        echo '</pre>';
         
         return $this->twig->render($response, 'users/show.html', [
             'firstname' => $user['firstname'],

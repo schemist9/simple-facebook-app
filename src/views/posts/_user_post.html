@@ -32,5 +32,38 @@
       </div>
     </div>
 
+    <div class="comments mt-3" data-post-id="{{ post.id }}">
+
+  <!-- existing comments list -->
+  <div class="comment-list">
+
+    {% for c in post.comments %}
+      {% include 'comments/_comment.html' with { c: c } only %}
+    {% endfor %}
+
+  </div>
+
+  <!-- add comment -->
+  <form action="/posts/{{ post.id }}/comments" method="post" class="add-comment-form mt-2">
+    <input type="hidden" name="reply_to_comment_id" value="">
+    <div class="d-flex">
+      <img src="/avatar.jpg" class="rounded-circle me-2" width="32" height="32">
+
+      <div class="flex-grow-1">
+        <!-- "replying to" banner (hidden unless set) -->
+        <div class="replying-banner small text-muted mb-1 d-none">
+          Replying to <span class="replying-name">comment</span>
+          <button type="button" class="btn btn-link btn-sm p-0 ms-2 cancel-reply">Cancel</button>
+        </div>
+
+        <input type="text"
+               name="text"
+               class="form-control form-control-sm"
+               placeholder="Write a comment...">
+      </div>
+    </div>
+  </form>
+
+</div>
   </div>
 </div>

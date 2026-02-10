@@ -15,6 +15,7 @@ use App\Controllers\UserController;
 use App\Controllers\IndexController;
 use App\Controllers\PostController;
 use App\Controllers\PostLikeController;
+use App\Controllers\PostCommentController;
 
 require '../vendor/autoload.php';
 
@@ -61,6 +62,7 @@ $app->post('/users/{user_id}/posts', [PostController::class, 'create']);
 $app->post('/posts/{id}/likes', [PostLikeController::class, 'create']);
 $app->delete('/posts/{id}/likes', [PostLikeController::class, 'destroy']);
 
+$app->post('/posts/{post_id}/comments', [PostCommentController::class, 'create']);
 // Run app
 $app->run();
 
