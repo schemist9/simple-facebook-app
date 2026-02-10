@@ -7,11 +7,11 @@ use Slim\Psr7\Response;
 use \App\Helpers\Session;
 
 use Slim\Views\Twig;
-use \App\Models\Post;
+use \App\Models\Comment;
 use \App\Models\Like;
 use \App\Models\PostValidator;
 
-class PostLikeController extends BaseController
+class CommentLikeController extends BaseController
 {
     public function create(Request $request, Response $response, array $args)
     {
@@ -20,15 +20,15 @@ class PostLikeController extends BaseController
                 ->withStatus(401);
         }
 
-        $postId = (int) $args['id'];
-        $post = Post::find($postId);
+        $commentId = (int) $args['comment_id'];
+        $comment = Comment::find($commentId);
 
-        if (empty($post)) {
+        if (empty($commentId)) {
             return $response
                 ->withStatus(404);
         }
 
-        $postOwnerId = $post['user_id'];
+        $commentOwnerId = $comment['user_id'];
 
         $requestData = $request->getParsedBody();
 
@@ -42,10 +42,10 @@ class PostLikeController extends BaseController
 
         $currentUserId = Session::currentUser();
 
-        $likeExists = Like::find($currentUserId, $postId, 'post');
+        $likeExists = Like::find($currentUserId, $commentId, 'comment');
 
         if (!$likeExists) {
-            new Like($currentUserId, $postId, 'post');
+            new Like($currentUserId, $commentId, 'comment');
         }
 
         return $response

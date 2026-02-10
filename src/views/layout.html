@@ -32,18 +32,33 @@
     posts.addEventListener('click', event => {
         const post = event.target.closest('[data-post-id]');
         if (!post) return;
-        if (!event.target.classList.contains('like-button')) return;
-        const postId = post.dataset.postId;
-        if (!postId) return;
+        if (event.target.classList.contains('like-button')) {
+            const postId = post.dataset.postId;
+            if (!postId) return;
 
-        fetch(`/posts/${postId}/likes`, {
-            method: 'POST'
-        }).then(data => {
-            console.log(data);
-            return data.text();
-        }).then(data => {
-            console.log(data);
-        })
+            fetch(`/posts/${postId}/likes`, {
+                method: 'POST'
+            }).then(data => {
+                console.log(data);
+                return data.text();
+            }).then(data => {
+                console.log(data);
+            })
+        } else if (event.target.classList.contains('like-btn')) {
+            const postId = event.target.dataset.likeTo;
+
+            console.log(postId);
+            
+
+            fetch(`/comments/${postId}/likes`, {
+                method: 'POST'
+            }).then(data => {
+                console.log(data);
+                return data.text();
+            }).then(data => {
+                console.log(data);
+            })
+        }
     });
 </script>
 </body>

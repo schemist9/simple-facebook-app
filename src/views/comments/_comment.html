@@ -29,10 +29,14 @@
           </div>
         </div>
 
-        <div class="text-muted small mt-1 d-flex gap-3">
+        <div class="text-muted small mt-1 d-flex gap-3 justify-content-between">
           <button type="button" class="btn btn-link btn-sm p-0 reply-btn"
                   data-reply-to="{{ c.id }}">
             Reply
+          </button>
+          <button type="button" class="btn btn-link btn-sm p-0 like-btn"
+                  data-like-to="{{ c.id }}">
+            {{ c.comment_likes ?? 0}} Like
           </button>
         </div>
 

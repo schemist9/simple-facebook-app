@@ -20,6 +20,15 @@ class Comment
         $this->commentableId = $data['commentable_id'];
     }
 
+    public static function find(int $id)
+    {
+        $pdo = \App\DB::get();
+        $query = "SELECT * FROM comments WHERE id = :id";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([ ':id' => $id ]);
+        return $stmt->fetch();
+    }
+
     public function create()
     {
         $errors = CommentValidator::validate([ 'text' => $this->text ]);

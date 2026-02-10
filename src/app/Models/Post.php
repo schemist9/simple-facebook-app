@@ -41,14 +41,19 @@ class Post
     {
         $pdo = \App\DB::get();
         $query = "
-            SELECT COUNT(posts_likes.id) AS post_likes, posts.id, posts.text, posts.created_at, users.firstname AS author_name, users.surname AS author_surname FROM posts
+            SELECT COUNT(likes.id) AS post_likes, posts.id, posts.text, posts.created_at, users.firstname AS author_name, users.surname AS author_surname FROM posts
                 INNER JOIN users 
                     ON posts.user_id = users.id
-                LEFT JOIN posts_likes
-                    ON posts.id = posts_likes.post_id
-                WHERE posts.user_wall_id = :user_wall_id
+                LEFT JOIN likes
+                    ON posts.id = likes.likeable_id
+                    AND
+                    likes.likeable_type = 'post'
+                WHERE 
+                    posts.user_wall_id = :user_wall_id 
                 GROUP BY (posts.id, users.id)
             ";
+
+            // why not likeable_type in Where?
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([
@@ -65,13 +70,18 @@ class Post
 
 
         $commentsQuery = "
-            SELECT comments.commentable_id, comments.text, comments.user_id, users.firstname, users.surname FROM comments
+            SELECT COUNT(likes.id) as comment_likes, comments.id, comments.commentable_id, comments.text, comments.user_id, users.firstname, users.surname FROM comments
                 INNER JOIN users
                     ON users.id = comments.user_id
+                LEFT JOIN likes
+                    ON likes.likeable_id = comments.id
+                    AND
+                    likes.likeable_type = 'comment'
                 WHERE 
                     comments.commentable_type = 'post' 
                         AND 
                     comments.commentable_id IN ($placeholders)
+                GROUP BY comments.id, users.id
         ";
 
         $stmt = $pdo->prepare($commentsQuery);

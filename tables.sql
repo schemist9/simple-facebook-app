@@ -14,10 +14,15 @@ CREATE TABLE IF NOT EXISTS posts (
     user_id INT REFERENCES users(id) 
 );
 
-CREATE TABLE IF NOT EXISTS posts_likes (
+-- CREATE TABLE IF NOT EXISTS posts_likes (
+
+CREATE TABLE IF NOT EXISTS likes (
     id SERIAL PRIMARY KEY,
-    post_id INT REFERENCES posts(id),
-    user_id INT REFERENCES users(id)
+    -- post_id INT REFERENCES posts(id),
+    user_id INT REFERENCES users(id),
+    likeable_id INT NOT NULL,
+    likeable_type TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 /*
 later: explore JTI implementation
