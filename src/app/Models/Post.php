@@ -41,7 +41,7 @@ class Post
     {
         $pdo = \App\DB::get();
         $query = "
-            SELECT COUNT(likes.id) AS post_likes, posts.id, posts.text, posts.created_at, users.firstname AS author_name, users.surname AS author_surname FROM posts
+            SELECT COUNT(likes.id) AS post_likes, posts.id, posts.text, posts.created_at, users.firstname AS author_name, users.surname AS author_surname, users.avatar AS author_avatar FROM posts
                 INNER JOIN users 
                     ON posts.user_id = users.id
                 LEFT JOIN likes
@@ -51,6 +51,7 @@ class Post
                 WHERE 
                     posts.user_wall_id = :user_wall_id 
                 GROUP BY (posts.id, users.id)
+                ORDER BY posts.created_at DESC
             ";
 
             // why not likeable_type in Where?
@@ -60,7 +61,9 @@ class Post
             ':user_wall_id' => $wallId
         ]);
         $posts = $stmt->fetchAll();
-
+        if (empty($posts)) {
+            return $posts;
+        }
         $postsIds = [];
         foreach ($posts as $key => $value) {
             $postsIds[] = $value['id'];
@@ -70,7 +73,7 @@ class Post
 
 
         $commentsQuery = "
-            SELECT COUNT(likes.id) as comment_likes, comments.id, comments.commentable_id, comments.text, comments.user_id, users.firstname, users.surname FROM comments
+            SELECT COUNT(likes.id) as comment_likes, comments.id, comments.commentable_id, comments.text, comments.user_id, comments.created_at, users.firstname AS author_firstname, users.surname AS author_surname, users.avatar AS author_avatar FROM comments
                 INNER JOIN users
                     ON users.id = comments.user_id
                 LEFT JOIN likes

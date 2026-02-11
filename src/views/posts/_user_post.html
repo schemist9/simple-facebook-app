@@ -1,9 +1,9 @@
-<div class="card mb-3 border-0 shadow-sm" data-post-id="{{ post.id }}">
+<div class="card bg-light mb-3 border-0 shadow-sm" data-post-id="{{ post.id }}">
   <div class="card-body">
 
     <!-- header -->
     <div class="d-flex align-items-center mb-2">
-      <img src="/avatar.jpg"
+      <img src="{{ post.author_avatar }}"
            class="rounded-circle me-2"
            width="40"
            height="40">
@@ -47,7 +47,7 @@
   <form action="/posts/{{ post.id }}/comments" method="post" class="add-comment-form mt-2">
     <input type="hidden" name="reply_to_comment_id" value="">
     <div class="d-flex">
-      <img src="/avatar.jpg" class="rounded-circle me-2" width="32" height="32">
+      <img src="{{ user.avatar ?? '/data/default-avatar.jpg' }}" class="rounded-circle me-2" width="32" height="32">
 
       <div class="flex-grow-1">
         <!-- "replying to" banner (hidden unless set) -->

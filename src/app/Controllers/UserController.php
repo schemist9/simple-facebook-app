@@ -11,6 +11,8 @@ use \App\Models\User;
 use \App\Models\Post;
 use \App\Models\PostLike;
 use \App\Models\UserValidator;
+use \App\Models\FriendRequest;
+use \App\Models\Friendship;
 
 class UserController
 {
@@ -22,7 +24,9 @@ class UserController
     public function show(Request $request, Response $response, array $args) {
         $id = (int) $args['id'];
         $user = User::find($id);
-        
+        $friendRequests = FriendRequest::findTo($id);
+        $friends = Friendship::findByUser($id);
+
         if (!$user) {
             return $response->withStatus(404);
         }
@@ -33,9 +37,12 @@ class UserController
             'firstname' => $user['firstname'],
             'surname' => $user['surname'],
             'email' => $user['email'],
+            'id' => $user['id'],
             'loggedIn' => Session::loggedIn(),
             'wallUserId' => $id,
-            'posts' => $posts
+            'friend_requests' => $friendRequests,
+            'posts' => $posts,
+            'friends' => $friends
         ]);
     }
 

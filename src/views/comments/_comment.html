@@ -1,6 +1,6 @@
     <div class="d-flex mb-3" data-comment-id="{{ c.id }}">
 
-      <img src="/avatar.jpg" class="rounded-circle me-2" width="32" height="32">
+      <img src="{{ c.author_avatar }}" class="rounded-circle me-2" width="32" height="32">
 
       <div class="flex-grow-1">
 
@@ -8,7 +8,7 @@
 
           <div class="d-flex justify-content-between align-items-start">
             <div class="fw-semibold small">
-              {{ c.author_name }} {{ c.author_surname }}
+              {{ c.author_firstname }} {{ c.author_surname }}
             </div>
             <div class="text-muted small comment-date" data-ts="{{ c.created_at|date('c') }}">
               {{ c.created_at|date('F j \\a\\t H:i') }}

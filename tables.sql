@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     firstname TEXT NOT NULL,
     surname TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    avatar TEXT DEFAULT '/data/default-avatar.jpg',
     password_hash TEXT NOT NULL
 );
 
@@ -33,5 +34,20 @@ CREATE TABLE IF NOT EXISTS comments (
     text TEXT NOT NULL,
     commentable_id INT NOT NULL,
     commentable_type TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS friend_requests (
+    id SERIAL PRIMARY KEY,
+    from_id INT REFERENCES users(id),
+    to_id INT REFERENCES users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users_friendships (
+    id SERIAL PRIMARY KEY,
+    user_1 INT REFERENCES users(id),
+    user_2 INT REFERENCES users(id),
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );

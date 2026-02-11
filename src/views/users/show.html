@@ -2,14 +2,71 @@
 
 {% block content %}
 <div class="container">
-    User: {{ firstname }} {{ surname }}
+    <div class="row">
+        <div class="col-4">
+            <div class="card">
+                <div>
+                    User: {{ firstname }} {{ surname }}
+                </div>
+                <div>
+                    User Avatar
+                </div>
+            </div>
 
-    {{ include('posts/new.html') }}
+            <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Add friend</button>
 
-    <div class="posts">
-        {% for post in posts %}
-            {{ include('posts/_user_post.html', { post: post })}}
-        {% endfor %}
+            <div class="card">
+                Incoming friend requests
+                <div class="row g-2 p-2">
+                    {% for friend_request in friend_requests %}
+                        <div class="col-md-4">
+                            <div class="card p-1">
+                                <div class="d-flex justify-content-center">
+                                    <img src="{{ friend_request.requester_avatar }}"
+                                        class="rounded-circle me-2"
+                                        width="40"
+                                        height="40">
+                                </div>
+                                <div class="text-center">
+                                    {{ friend_request.requester_firstname }}
+                                    {{ friend_request.requester_surname }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">Friend list
+                                <div class="row g-2 p-2">
+                    {% for friend in friends %}
+                        <div class="col-md-4">
+                            <div class="card p-1">
+                                <div class="d-flex justify-content-center">
+                                    <img src="{{ friend.friend_avatar }}"
+                                        class="rounded-circle me-2"
+                                        width="40"
+                                        height="40">
+                                </div>
+                                <div class="text-center">
+                                    {{ friend.friend_firstname }}
+                                    {{ friend.friend_surname }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            {{ include('posts/new.html') }}
+
+            <div class="posts">
+                {% for post in posts %}
+                    {{ include('posts/_user_post.html', { post: post })}}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

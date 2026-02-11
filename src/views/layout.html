@@ -28,6 +28,20 @@
         el.textContent = formatDate(ts);
     });
 
+    const friendRequestBtn = document.querySelector('.friend-request');
+
+    friendRequestBtn.addEventListener('click', event => {
+        const userId = event.target.dataset.friendRequestTo;
+        fetch(`/users/${userId}/friend_requests`, {
+            method: 'POST'
+        }).then(data => {
+            console.log(data);
+            return data.text();
+        }).then(data => {
+            console.log(data);
+        })
+    });
+
     const posts = document.querySelector('.posts');
     posts.addEventListener('click', event => {
         const post = event.target.closest('[data-post-id]');

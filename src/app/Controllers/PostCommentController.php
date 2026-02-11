@@ -37,6 +37,7 @@ class PostCommentController extends BaseController
         }
 
         $userId = Session::currentUser();
+        $postAuthorId = $post['user_id'];
 
         $comment = new Comment([
             'text' => $requestData['text'],
@@ -52,6 +53,8 @@ class PostCommentController extends BaseController
         //         ->withStatus(303);
         // }
 
-        return $response;
+        return $response
+            ->withHeader('Location', '/users/' . $postAuthorId)
+            ->withStatus(303);
     }
 }

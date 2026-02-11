@@ -17,6 +17,7 @@ use App\Controllers\PostController;
 use App\Controllers\PostLikeController;
 use App\Controllers\PostCommentController;
 use App\Controllers\CommentLikeController;
+use App\Controllers\FriendRequestController;
 
 require '../vendor/autoload.php';
 
@@ -66,6 +67,8 @@ $app->delete('/posts/{id}/likes', [PostLikeController::class, 'destroy']);
 $app->post('/comments/{comment_id}/likes', [CommentLikeController::class, 'create']);
 
 $app->post('/posts/{post_id}/comments', [PostCommentController::class, 'create']);
+
+$app->post('/users/{user_id}/friend_requests', [FriendRequestController::class, 'create']);
 // Run app
 $app->run();
 
