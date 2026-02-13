@@ -1,23 +1,42 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-3">
     <div class="row">
         <div class="col-4">
-            <div class="card">
-                <div>
-                    User: {{ firstname }} {{ surname }}
-                </div>
-                <div>
-                    User Avatar
+            <div class="card mb-2 p-3">
+                <h3 class="display-7 mb-3">
+                    {{ firstname }} {{ surname }}
+                </h3>
+                <div class="justify-content-center d-flex">
+                    <img 
+                        src="{{ avatar }}" 
+                        alt="avatar"
+                        class="rounded-circle shadow"
+                        style="width: 220px; height: 220px; object-fit: cover;"
+                    >
                 </div>
             </div>
 
-            <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Add friend</button>
+            <div class="mb-4">
+                {% if friendship_exists %}
+                <button class="friend-remove btn btn-primary" data-friend-request-to="{{id}}">Remove friend</button>
+                {% elseif incoming_friend_request_exists %}
+                An incoming friend request!
+                <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Accept friend request</button>
+                {% elseif outgoing_friend_request_exists %}
+                <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Cancel friend request</button>
+                {% else %}
+                <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Add friend</button>
+                {% endif %}
+            </div>
 
-            <div class="card">
+            {% if friend_requests is not empty %}
+            <div class="card mb-2 p-2">
+                <div class="mb-2">
                 Incoming friend requests
-                <div class="row g-2 p-2">
+                </div>
+                <div class="row g-2">
                     {% for friend_request in friend_requests %}
                         <div class="col-md-4">
                             <div class="card p-1">
@@ -36,11 +55,17 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="card">Friend list
-                                <div class="row g-2 p-2">
+            {% endif %}
+            {% if friends is not empty %}
+            <div class="card p-2">
+                <div class="mb-2">
+                Friend list
+                </div>
+
+                                <div class="row g-2">
                     {% for friend in friends %}
                         <div class="col-md-4">
-                            <div class="card p-1">
+                            <div class="card p-1 h-100">
                                 <div class="d-flex justify-content-center">
                                     <img src="{{ friend.friend_avatar }}"
                                         class="rounded-circle me-2"
@@ -56,10 +81,13 @@
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
 
         <div class="col">
-            {{ include('posts/new.html') }}
+            <div class="mb-3">
+                {{ include('posts/new.html') }}
+            </div>
 
             <div class="posts">
                 {% for post in posts %}

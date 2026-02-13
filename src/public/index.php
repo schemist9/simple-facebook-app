@@ -19,6 +19,9 @@ use App\Controllers\PostCommentController;
 use App\Controllers\CommentLikeController;
 use App\Controllers\FriendRequestController;
 
+use App\Middlewares\Authenticated;
+
+
 require '../vendor/autoload.php';
 
 session_start();
@@ -58,17 +61,16 @@ $app->get('/register', [UserController::class, 'new']);
 $app->post('/register', [UserController::class, 'create']);
 $app->get('/users/{id}', [UserController::class, 'show']);
 
-$app->get('/posts/new', [PostController::class, 'new']);
-$app->post('/users/{user_id}/posts', [PostController::class, 'create']);
+$app->post('/users/{user_id}/posts', [PostController::class, 'create'])->add(new Authenticated());
 
-$app->post('/posts/{id}/likes', [PostLikeController::class, 'create']);
-$app->delete('/posts/{id}/likes', [PostLikeController::class, 'destroy']);
+$app->post('/posts/{id}/likes', [PostLikeController::class, 'create'])->add(new Authenticated());
+$app->delete('/posts/{id}/likes', [PostLikeController::class, 'destroy'])->add(new Authenticated());
 
-$app->post('/comments/{comment_id}/likes', [CommentLikeController::class, 'create']);
+$app->post('/comments/{comment_id}/likes', [CommentLikeController::class, 'create'])->add(new Authenticated());
 
-$app->post('/posts/{post_id}/comments', [PostCommentController::class, 'create']);
+$app->post('/posts/{post_id}/comments', [PostCommentController::class, 'create'])->add(new Authenticated());
 
-$app->post('/users/{user_id}/friend_requests', [FriendRequestController::class, 'create']);
+$app->post('/users/{user_id}/friend_requests', [FriendRequestController::class, 'create'])->add(new Authenticated());
 // Run app
 $app->run();
 

@@ -20,11 +20,6 @@ class PostCommentController extends BaseController
 
     public function create(Request $request, Response $response, array $args) 
     {
-        if (!Session::loggedIn()) {
-            return $response
-                ->withHeader('Location', '/')
-                ->withStatus(303);
-        }
         $requestData = $request->getParsedBody();
         $postId = $args['post_id'];
 

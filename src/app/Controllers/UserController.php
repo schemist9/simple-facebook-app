@@ -27,6 +27,15 @@ class UserController
         $friendRequests = FriendRequest::findTo($id);
         $friends = Friendship::findByUser($id);
 
+        $currentUser = Session::currentUser();
+
+        if ($currentUser) {
+            $currentUserFriends = Friendship::findByUser($currentUser);
+
+            $friendshipExists = Friendship::exists($currentUser, $id);
+            $incomingFriendRequestExists = FriendRequest::findByFromAndToId($id, $currentUser);
+            $outgoingFriendRequestExists = FriendRequest::findByFromAndToId($currentUser, $id);
+        }
         if (!$user) {
             return $response->withStatus(404);
         }
@@ -38,11 +47,15 @@ class UserController
             'surname' => $user['surname'],
             'email' => $user['email'],
             'id' => $user['id'],
+            'avatar' => $user['avatar'],
             'loggedIn' => Session::loggedIn(),
             'wallUserId' => $id,
             'friend_requests' => $friendRequests,
             'posts' => $posts,
-            'friends' => $friends
+            'friends' => $friends,
+            'friendship_exists' => $friendshipExists ?? false,
+            'incoming_friend_request_exists' => $incomingFriendRequestExists ?? [],
+            'outgoing_friend_request_exists' => $outgoingFriendRequestExists ?? []
         ]);
     }
 

@@ -15,11 +15,6 @@ class PostLikeController extends BaseController
 {
     public function create(Request $request, Response $response, array $args)
     {
-        if (!Session::loggedIn()) {
-            return $response
-                ->withStatus(401);
-        }
-
         $postId = (int) $args['id'];
         $post = Post::find($postId);
 

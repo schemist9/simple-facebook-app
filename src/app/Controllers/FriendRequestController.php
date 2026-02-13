@@ -16,13 +16,11 @@ class FriendRequestController extends BaseController
 {
     public function create(Request $request, Response $response, array $args)
     {
-        if (!Session::loggedIn()) {
-            return $response->withStatus(401);
-        }
         $friendRequestFrom = Session::currentUser();
         $friendRequestTo = (int) $args['user_id'];
 
         if ($friendRequestFrom === $friendRequestTo) {
+            $message = "I knew you'd try to do it, my friend. I am one step ahead of you. Or am I?";
             return $response->withStatus(400);
         }
 
@@ -36,7 +34,7 @@ class FriendRequestController extends BaseController
             return $response->withStatus(200);
         }
 
-        $incomingFriendRequestExists = FriendRequest::findByFrom($friendRequestTo);
+        $incomingFriendRequestExists = FriendRequest::findByFromAndToId($friendRequestTo, $friendRequestFrom);
         if ($incomingFriendRequestExists) {
             $friendship = new Friendship(['user_1' => $friendRequestFrom, 'user_2' => $friendRequestTo]);
             $friendship->create();

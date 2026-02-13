@@ -15,11 +15,6 @@ class CommentLikeController extends BaseController
 {
     public function create(Request $request, Response $response, array $args)
     {
-        if (!Session::loggedIn()) {
-            return $response
-                ->withStatus(401);
-        }
-
         $commentId = (int) $args['comment_id'];
         $comment = Comment::find($commentId);
 

@@ -18,21 +18,7 @@ class PostController extends BaseController
 
     }
 
-    public function new(Request $request, Response $response) {
-        if (!Session::loggedIn()) {
-            header('Location: /');
-            exit;
-        }
-
-        return $this->twig->render($response, 'posts/new.html');
-    }
-
-    public function create(Request $request, Response $response, array $args) {  
-        if (!Session::loggedIn()) {
-            return $response
-                ->withHeader('Location', '/')
-                ->withStatus(303);
-        }
+    public function create(Request $request, Response $response, array $args) {
         $requestData = $request->getParsedBody();
         $errorReponse = $this->filterParams($request, $response, $requestData, ['text']);
 

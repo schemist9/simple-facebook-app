@@ -20,15 +20,17 @@
     </div>
 
     <!-- actions -->
-    <div class="border-top pt-2 mt-2">
-      <div class="d-flex justify-content-around text-muted small">
+    <div class="">
+      <div class="d-flex justify-content-end text-muted small">
         <div>
-          <button class="like-button">
-            {{ post.post_likes }}
-            Like
+          <button 
+              class="like-button btn btn-outline-danger like-btn d-inline-flex align-items-center gap-2"
+              data-post-id="{{ post.id }}"
+          >
+              <span class="like-icon">❤</span>
+              <span class="like-count">{{ post.post_likes }}</span>
           </button>
         </div>
-        <div>Comment</div>
       </div>
     </div>
 
