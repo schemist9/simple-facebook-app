@@ -29,7 +29,7 @@ class FriendRequestController extends BaseController
             return $response->withStatus(200);
         }
 
-        $friendshipExists = Friendship::exists($friendRequestFrom, $friendRequestTo);
+        $friendshipExists = Friendship::findByFriends($friendRequestFrom, $friendRequestTo);
         if ($friendshipExists) {
             return $response->withStatus(200);
         }
@@ -38,9 +38,8 @@ class FriendRequestController extends BaseController
         if ($incomingFriendRequestExists) {
             $friendship = new Friendship(['user_1' => $friendRequestFrom, 'user_2' => $friendRequestTo]);
             $friendship->create();
-            FriendRequest::destroy($incomingFriendRequestExists['id']);
+            FriendRequest::destroy($incomingFriendRequestExists);
 
-            $response->getBody()->write('To be implemented...');
             return $response;
         }
 
@@ -49,5 +48,25 @@ class FriendRequestController extends BaseController
 
         $response->getBody()->write('Success!');
         return $response;
+    }
+
+    public function destroy(Request $request, Response $response, array $args)
+    {
+        $friendRequestFrom = Session::currentUser();
+        $friendRequestTo = (int) $args['user_id'];
+
+        if ($friendRequestFrom === $friendRequestTo) {
+            return $response->withStatus(404);
+        }
+
+        $friendRequest = FriendRequest::findByFromAndToId($friendRequestFrom, $friendRequestTo);
+
+        if (!$friendRequest) {
+            return $response->withStatus(404);
+        }
+
+        FriendRequest::destroy($friendRequest);
+
+        return $response->withStatus(200);
     }
 }

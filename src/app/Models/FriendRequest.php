@@ -45,7 +45,7 @@ class FriendRequest
         $query = "SELECT * FROM friend_requests WHERE from_id = :from_id AND to_id = :to_id";
         $stmt = $pdo->prepare($query);
         $stmt->execute([ ':from_id' => $fromId, ':to_id' => $toId ]);
-        return $stmt->fetch();
+        return $stmt->fetch()['id'] ?? null;
     }
 
     public static function findTo(int $toId)

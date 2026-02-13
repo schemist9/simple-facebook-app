@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\UserProfileService;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use \App\Helpers\Session;
@@ -16,7 +17,7 @@ use \App\Models\Friendship;
 
 class UserController
 {
-    public function __construct(private Twig $twig)
+    public function __construct(private Twig $twig, private UserProfileService $userProfileService)
     {
 
     }
@@ -24,38 +25,17 @@ class UserController
     public function show(Request $request, Response $response, array $args) {
         $id = (int) $args['id'];
         $user = User::find($id);
-        $friendRequests = FriendRequest::findTo($id);
-        $friends = Friendship::findByUser($id);
-
-        $currentUser = Session::currentUser();
-
-        if ($currentUser) {
-            $currentUserFriends = Friendship::findByUser($currentUser);
-
-            $friendshipExists = Friendship::exists($currentUser, $id);
-            $incomingFriendRequestExists = FriendRequest::findByFromAndToId($id, $currentUser);
-            $outgoingFriendRequestExists = FriendRequest::findByFromAndToId($currentUser, $id);
-        }
         if (!$user) {
             return $response->withStatus(404);
         }
-
-        $posts = Post::getByWallId($id);
         
+        $profileInfo = $this->userProfileService->showUserProfile($id);
         return $this->twig->render($response, 'users/show.html', [
-            'firstname' => $user['firstname'],
-            'surname' => $user['surname'],
-            'email' => $user['email'],
-            'id' => $user['id'],
-            'avatar' => $user['avatar'],
+            'user' => $user,
             'loggedIn' => Session::loggedIn(),
             'wallUserId' => $id,
-            'friend_requests' => $friendRequests,
-            'posts' => $posts,
-            'friends' => $friends,
-            'friendship_exists' => $friendshipExists ?? false,
-            'incoming_friend_request_exists' => $incomingFriendRequestExists ?? [],
-            'outgoing_friend_request_exists' => $outgoingFriendRequestExists ?? []
+            'show_friendship_button' => Session::currentUser() != $id,
+            ...$profileInfo
         ]);
     }
 

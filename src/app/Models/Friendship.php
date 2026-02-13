@@ -28,7 +28,7 @@ class Friendship
         return $stmt;
     }
 
-    public static function exists(int $user_1, int $user_2)
+    public static function findByFriends(int $user_1, int $user_2)
     {
         $pdo = \App\DB::get();
         $query = "SELECT * FROM users_friendships WHERE 
@@ -37,9 +37,22 @@ class Friendship
             (user_2 = :user_1 AND user_1 = :user_2)";
         $stmt = $pdo->prepare($query);
         $stmt->execute([ ':user_1' => $user_1, ':user_2' => $user_2 ]);
-        return !empty($stmt->fetch());
+
+        var_dump($user_1, $user_2);
+
+        return $stmt->fetch()['id'] ?? null;
     }
 
+    public static function destroy(int $id)
+    {
+        $pdo = \App\DB::get();
+        $query = "DELETE FROM users_friendships WHERE id = :id";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+            ':id' => $id
+        ]);
+        return $stmt;
+    }
     public static function findByUser(int $userId)
     {
         $pdo = \App\DB::get();

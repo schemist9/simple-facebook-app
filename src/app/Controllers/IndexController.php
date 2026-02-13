@@ -9,6 +9,7 @@ use \App\Helpers\Session;
 use Slim\Views\Twig;
 use \App\Models\User;
 use \App\Models\UserValidator;
+use \App\Models\Post;
 
 class IndexController
 {

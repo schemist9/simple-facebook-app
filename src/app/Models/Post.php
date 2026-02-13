@@ -61,6 +61,7 @@ class Post
             ':user_wall_id' => $wallId
         ]);
         $posts = $stmt->fetchAll();
+
         if (empty($posts)) {
             return $posts;
         }
@@ -71,6 +72,24 @@ class Post
 
         $placeholders = str_repeat('?,', count($postsIds) - 1) . '?';
 
+        $postsLikesQuery = "
+            SELECT * FROM likes
+                INNER JOIN users
+                    ON users.id = likes.user_id
+                WHERE likes.likeable_type = 'post'
+                    AND
+                    likes.likeable_id IN ($placeholders)
+        ";
+
+        $stmt = $pdo->prepare($postsLikesQuery);
+        $stmt->execute($postsIds);
+        $res = $stmt->fetchAll();
+
+        $likesByPostId = [];
+
+        foreach ($res as $key => $value) {
+            $likesByPostId[$value['likeable_id']][] = $res[$key]['user_id'];
+        }
 
         $commentsQuery = "
             SELECT COUNT(likes.id) as comment_likes, comments.id, comments.commentable_id, comments.text, comments.user_id, comments.created_at, users.firstname AS author_firstname, users.surname AS author_surname, users.avatar AS author_avatar FROM comments
@@ -106,7 +125,9 @@ class Post
             
             $posts[$key]['comments'] = $commentsByPostId[$postId] ?? [];
         }
-
+        echo '<pre>';
+var_dump($likesByPostId);
+echo '</pre>';
         return $posts;
     }
     

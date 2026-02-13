@@ -6,11 +6,11 @@
         <div class="col-4">
             <div class="card mb-2 p-3">
                 <h3 class="display-7 mb-3">
-                    {{ firstname }} {{ surname }}
+                    {{ user.firstname }} {{ user.surname }}
                 </h3>
                 <div class="justify-content-center d-flex">
                     <img 
-                        src="{{ avatar }}" 
+                        src="{{ user.avatar }}"
                         alt="avatar"
                         class="rounded-circle shadow"
                         style="width: 220px; height: 220px; object-fit: cover;"
@@ -18,26 +18,28 @@
                 </div>
             </div>
 
+            {% if show_friendship_button %}
             <div class="mb-4">
                 {% if friendship_exists %}
-                <button class="friend-remove btn btn-primary" data-friend-request-to="{{id}}">Remove friend</button>
+                    <button class="friend-remove btn btn-primary" data-friends-with="{{user.id}}">Remove friend</button>
                 {% elseif incoming_friend_request_exists %}
-                An incoming friend request!
-                <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Accept friend request</button>
+                    An incoming friend request!
+                    <button class="friend-request btn btn-primary" data-friend-request-to="{{user.id}}">Accept friend request</button>
                 {% elseif outgoing_friend_request_exists %}
-                <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Cancel friend request</button>
+                    <button class="cancel-friend-request btn btn-primary" data-friend-request-to="{{user.id}}">Cancel friend request</button>
                 {% else %}
-                <button class="friend-request btn btn-primary" data-friend-request-to="{{id}}">Add friend</button>
+                    <button class="friend-request btn btn-primary" data-friend-request-to="{{user.id}}">Add friend</button>
                 {% endif %}
             </div>
+            {% endif %}
 
-            {% if friend_requests is not empty %}
+            {% if wall_user_friend_requests is not empty %}
             <div class="card mb-2 p-2">
                 <div class="mb-2">
                 Incoming friend requests
                 </div>
                 <div class="row g-2">
-                    {% for friend_request in friend_requests %}
+                    {% for friend_request in wall_user_friend_requests %}
                         <div class="col-md-4">
                             <div class="card p-1">
                                 <div class="d-flex justify-content-center">
@@ -56,14 +58,14 @@
                 </div>
             </div>
             {% endif %}
-            {% if friends is not empty %}
+            {% if wall_user_friends is not empty %}
             <div class="card p-2">
                 <div class="mb-2">
                 Friend list
                 </div>
 
                                 <div class="row g-2">
-                    {% for friend in friends %}
+                    {% for friend in wall_user_friends %}
                         <div class="col-md-4">
                             <div class="card p-1 h-100">
                                 <div class="d-flex justify-content-center">
@@ -90,7 +92,7 @@
             </div>
 
             <div class="posts">
-                {% for post in posts %}
+                {% for post in wall_user_posts %}
                     {{ include('posts/_user_post.html', { post: post })}}
                 {% endfor %}
             </div>

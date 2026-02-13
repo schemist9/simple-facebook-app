@@ -30,17 +30,53 @@
 
     const friendRequestBtn = document.querySelector('.friend-request');
 
-    friendRequestBtn.addEventListener('click', event => {
-        const userId = event.target.dataset.friendRequestTo;
-        fetch(`/users/${userId}/friend_requests`, {
-            method: 'POST'
-        }).then(data => {
-            console.log(data);
-            return data.text();
-        }).then(data => {
-            console.log(data);
-        })
-    });
+    if (friendRequestBtn) {
+        friendRequestBtn.addEventListener('click', event => {
+            const userId = event.target.dataset.friendRequestTo;
+            fetch(`/users/${userId}/friend_requests`, {
+                method: 'POST'
+            }).then(data => {
+                console.log(data);
+                return data.text();
+            }).then(data => {
+                console.log(data);
+            })
+        });
+    }
+
+    const cancelFriendRequestBtn = document.querySelector('.cancel-friend-request');
+
+    if (cancelFriendRequestBtn) {
+        cancelFriendRequestBtn.addEventListener('click', event => {
+            const userId = event.target.dataset.friendRequestTo;
+            fetch(`/users/${userId}/friend_requests`, {
+                method: 'DELETE'
+            }).then(data => {
+                console.log(data);
+                return data.text();
+            }).then(data => {
+                console.log(data);
+            })
+        });
+    }
+
+    const removeFriendBtn = document.querySelector('.friend-remove');
+
+    if (removeFriendBtn) {
+        removeFriendBtn.addEventListener('click', event => {
+            const userId = event.target.dataset.friendsWith;
+            fetch(`/users/${userId}/friends`, {
+                method: 'DELETE'
+            }).then(data => {
+                console.log(data);
+                return data.text();
+            }).then(data => {
+                console.log(data);
+            })
+        });
+
+    }
+
 
     const posts = document.querySelector('.posts');
     posts.addEventListener('click', event => {

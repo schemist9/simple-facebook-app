@@ -1,4 +1,6 @@
 <?php
+
+use App\Controllers\FriendshipController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -18,7 +20,6 @@ use App\Controllers\PostLikeController;
 use App\Controllers\PostCommentController;
 use App\Controllers\CommentLikeController;
 use App\Controllers\FriendRequestController;
-
 use App\Middlewares\Authenticated;
 
 
@@ -67,10 +68,15 @@ $app->post('/posts/{id}/likes', [PostLikeController::class, 'create'])->add(new 
 $app->delete('/posts/{id}/likes', [PostLikeController::class, 'destroy'])->add(new Authenticated());
 
 $app->post('/comments/{comment_id}/likes', [CommentLikeController::class, 'create'])->add(new Authenticated());
+$app->delete('/comments/{comment_id}/likes', [CommentLikeController::class, 'destroy'])->add(new Authenticated());
+
 
 $app->post('/posts/{post_id}/comments', [PostCommentController::class, 'create'])->add(new Authenticated());
 
 $app->post('/users/{user_id}/friend_requests', [FriendRequestController::class, 'create'])->add(new Authenticated());
+$app->delete('/users/{user_id}/friend_requests', [FriendRequestController::class, 'destroy'])->add(new Authenticated());
+$app->delete('/users/{user_id}/friends', [FriendshipController::class, 'destroy'])->add(new Authenticated());
+
 // Run app
 $app->run();
 
