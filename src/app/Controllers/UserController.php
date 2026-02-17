@@ -33,6 +33,7 @@ class UserController
         return $this->twig->render($response, 'users/show.html', [
             'user' => $user,
             'loggedIn' => Session::loggedIn(),
+            'logged_user_id' => Session::currentUser(),
             'wallUserId' => $id,
             'show_friendship_button' => Session::currentUser() != $id,
             ...$profileInfo

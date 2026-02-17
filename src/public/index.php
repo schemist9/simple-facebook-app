@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
+use Twig\TwigFunction;
 
 use DI\Container;
 
@@ -21,7 +22,7 @@ use App\Controllers\PostCommentController;
 use App\Controllers\CommentLikeController;
 use App\Controllers\FriendRequestController;
 use App\Middlewares\Authenticated;
-
+use App\Helpers\Views\LikeHelper;
 
 require '../vendor/autoload.php';
 
@@ -35,12 +36,21 @@ $app = AppFactory::create();
 $app->addRoutingMiddleware();
 
 $twig = Twig::create(__DIR__ . '/../views', ['cache' => false]);
+$likeHelper = new LikeHelper();
+
 $app->add(TwigMiddleware::create($app, $twig));
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-$container->set(Twig::class, function() {
-    return Twig::create(__DIR__ . '/../views', ['cache' => false]);
+$container->set(Twig::class, function() use ($likeHelper) {
+    $twg = Twig::create(__DIR__ . '/../views', ['cache' => false]);
+    $twg->getEnvironment()->addFunction(
+        new TwigFunction('user_liked_post', [$likeHelper, 'userLikedPost'])
+    );
+    $twg->getEnvironment()->addFunction(
+        new TwigFunction('user_liked_comment', [$likeHelper, 'userLikedComment'])
+    );
+    return $twg;
 });
 
 $container->set(User::class, function() {

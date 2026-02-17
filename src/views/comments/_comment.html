@@ -34,9 +34,9 @@
                   data-reply-to="{{ c.id }}">
             Reply
           </button>
-          <button type="button" class="btn btn-link btn-sm p-0 like-btn"
+          <button type="button" class="{{ user_liked_comment(logged_user_id, c) ? 'unlike-comment-button' : 'like-comment-button' }} btn btn-link btn-sm p-0"
                   data-like-to="{{ c.id }}">
-            {{ c.comment_likes ?? 0}} Like
+            {{ c.comment_likes ?? 0}} {{ user_liked_comment(logged_user_id, c) ? 'Unlike' : 'Like' }}
           </button>
         </div>
 

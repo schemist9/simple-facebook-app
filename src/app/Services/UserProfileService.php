@@ -29,7 +29,7 @@ class UserProfileService
         }
 
         $posts = Post::getByWallId($wallId);
-
+    
         return [
             'wall_user_posts' => $posts,
             'wall_user_friends' => $friends,

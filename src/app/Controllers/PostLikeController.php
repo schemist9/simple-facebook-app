@@ -49,6 +49,24 @@ class PostLikeController extends BaseController
 
     public function destroy(Request $request, Response $response)
     {
+        $postId = (int) $args['id'];
+        $post = Post::find($postId);
 
+        if (empty($post)) {
+            return $response
+                ->withStatus(404);
+        }
+
+        $postOwnerId = $post['user_id'];
+
+        $currentUserId = Session::currentUser();
+
+        $likeExists = Like::find($currentUserId, $postId, 'post');
+
+        if (!$likeExists) {
+            return $response->withStatus(404);
+        }
+
+        
     }
 }

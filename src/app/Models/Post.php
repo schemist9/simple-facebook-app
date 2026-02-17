@@ -88,7 +88,16 @@ class Post
         $likesByPostId = [];
 
         foreach ($res as $key => $value) {
-            $likesByPostId[$value['likeable_id']][] = $res[$key]['user_id'];
+            $likesByPostId[$value['likeable_id']][] = [
+                'user_id' => $res[$key]['user_id'],
+                'avatar' => $res[$key]['avatar'],
+                'firstname' => $res[$key]['firstname'],
+                'surname' => $res[$key]['surname'],
+            ];
+        }
+
+        foreach ($posts as $key => $value) {
+            $posts[$key]['likes'] = $likesByPostId[$value['id']] ?? [];
         }
 
         $commentsQuery = "
@@ -114,9 +123,42 @@ class Post
             return $posts;
         }
 
+        $commentsIds = [];
+
+        foreach ($comments as $key => $value) {
+            $commentsIds[] = $value['id'];
+        }
+
+        $placeholders = str_repeat('?,', count($commentsIds) - 1) . '?';
+
+        $commentsLikesQuery = "
+            SELECT * FROM likes
+                INNER JOIN users
+                    ON users.id = likes.user_id
+                WHERE likes.likeable_type = 'comment'
+                    AND
+                    likes.likeable_id IN ($placeholders)
+        ";
+
+        $stmt = $pdo->prepare($commentsLikesQuery);
+        $stmt->execute($commentsIds);
+        $res = $stmt->fetchAll();
+
+        $likesByCommentId = [];
+
+        foreach ($res as $key => $value) {
+            $likesByCommentId[$value['likeable_id']][] = [
+                'user_id' => $res[$key]['user_id'],
+                'avatar' => $res[$key]['avatar'],
+                'firstname' => $res[$key]['firstname'],
+                'surname' => $res[$key]['surname'],
+            ];
+        }
+
         $commentsByPostId = [];
 
         foreach ($comments as $key => $value) {
+            $comments[$key]['likes'] = $likesByCommentId[$comments[$key]['id']] ?? [];
             $commentsByPostId[$value['commentable_id']][] = $comments[$key];
         }
 
@@ -125,9 +167,7 @@ class Post
             
             $posts[$key]['comments'] = $commentsByPostId[$postId] ?? [];
         }
-        echo '<pre>';
-var_dump($likesByPostId);
-echo '</pre>';
+        
         return $posts;
     }
     

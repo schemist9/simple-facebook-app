@@ -24,7 +24,12 @@
       <div class="d-flex justify-content-end text-muted small">
         <div>
           <button 
-              class="like-button btn btn-outline-danger like-btn d-inline-flex align-items-center gap-2"
+              class="{{ 
+                user_liked_post(logged_user_id, post) 
+                  ? 'unlike-post-button btn-danger' 
+                  : 'like-post-button btn-outline-danger'
+                }} 
+                btn d-inline-flex align-items-center gap-2"
               data-post-id="{{ post.id }}"
           >
               <span class="like-icon">❤</span>
@@ -40,7 +45,7 @@
   <div class="comment-list">
 
     {% for c in post.comments %}
-      {% include 'comments/_comment.html' with { c: c } only %}
+      {% include 'comments/_comment.html' with { c: c, logged_user_id: logged_user_id } only %}
     {% endfor %}
 
   </div>
