@@ -47,7 +47,7 @@ class PostLikeController extends BaseController
             ->withStatus(200);
     }
 
-    public function destroy(Request $request, Response $response)
+    public function destroy(Request $request, Response $response, array $args)
     {
         $postId = (int) $args['id'];
         $post = Post::find($postId);
@@ -57,16 +57,18 @@ class PostLikeController extends BaseController
                 ->withStatus(404);
         }
 
-        $postOwnerId = $post['user_id'];
-
         $currentUserId = Session::currentUser();
 
-        $likeExists = Like::find($currentUserId, $postId, 'post');
+        $like = Like::find($currentUserId, $postId, 'post');
 
-        if (!$likeExists) {
+        if (!$like) {
             return $response->withStatus(404);
         }
 
-        
+        Like::delete($like['id']);
+
+        return $response
+            ->withStatus(200);
+
     }
 }

@@ -47,8 +47,30 @@ class CommentLikeController extends BaseController
             ->withStatus(200);
     }
 
-    public function destroy(Request $request, Response $response)
+    public function destroy(Request $request, Response $response, array $args)
     {
+        {
+            $commentId = (int) $args['comment_id'];
+            $comment = Comment::find($commentId);
 
+            if (empty($comment)) {
+                return $response
+                    ->withStatus(404);
+            }
+
+            $currentUserId = Session::currentUser();
+
+            $like = Like::find($currentUserId, $commentId, 'comment');
+
+            if (!$like) {
+                return $response->withStatus(404);
+            }
+
+            Like::delete($like['id']);
+
+            return $response
+                ->withStatus(200);
+
+        }
     }
 }

@@ -49,4 +49,15 @@ class Like
         $stmt->execute([ ':post_id' => $postId ]);
         return $stmt->fetch();
     }
+
+    public static function delete(int $likeId)
+    {
+        $pdo = \App\DB::get();
+        $query = "DELETE FROM likes WHERE id = :like_id";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([ ':like_id' => $likeId ]);
+        return $stmt->rowCount();
+    }
+
+    
 }
