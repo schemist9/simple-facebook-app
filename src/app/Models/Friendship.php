@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-use App\Models\CommentValidator;
 
 class Friendship
 {
@@ -37,8 +36,6 @@ class Friendship
             (user_2 = :user_1 AND user_1 = :user_2)";
         $stmt = $pdo->prepare($query);
         $stmt->execute([ ':user_1' => $user_1, ':user_2' => $user_2 ]);
-
-        var_dump($user_1, $user_2);
 
         return $stmt->fetch()['id'] ?? null;
     }

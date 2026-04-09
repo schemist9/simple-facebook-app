@@ -4,8 +4,6 @@ namespace App\Models;
 
 class UserValidator 
 {
-    // firstname, surname, email, password_hash
-
     public function validate(array $user): array
     {
         $errors = [];
