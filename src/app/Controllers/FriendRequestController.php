@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\FriendshipService;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use \App\Helpers\Session;
@@ -16,37 +17,32 @@ class FriendRequestController extends BaseController
 {
     public function create(Request $request, Response $response, array $args)
     {
+        // friendship_same_user, friendship_exists, friend_request_exists, friendship_created
         $friendRequestFrom = Session::currentUser();
         $friendRequestTo = (int) $args['user_id'];
 
-        if ($friendRequestFrom === $friendRequestTo) {
-            $message = "I knew you'd try to do it, my friend. I am one step ahead of you. Or am I?";
-            return $response->withStatus(400);
+        $result = (new FriendshipService)->processRequest($friendRequestFrom, $friendRequestTo);
+
+        switch ($result)
+        {
+            case 'FRIEND_SAME_USER':
+                $response->withStatus(400);
+                break;
+            case 'FRIEND_REQUEST_EXISTS':
+                $response->withStatus(200);
+                break;
+            case 'FRIENDSHIP_EXISTS':
+                $response->withStatus(200);
+                break;
+            case 'FRIENDSHIP_CREATED':
+                $response->withStatus(200);
+                break;
+            case 'FRIEND_REQUEST_CREATED':
+                $response->getBody()->write('Success!');
+                break;
         }
 
-        $friendRequestExists = FriendRequest::findByFromAndToId($friendRequestFrom, $friendRequestTo);
-        if ($friendRequestExists) {
-            return $response->withStatus(200);
-        }
 
-        $friendshipExists = Friendship::findByFriends($friendRequestFrom, $friendRequestTo);
-        if ($friendshipExists) {
-            return $response->withStatus(200);
-        }
-
-        $incomingFriendRequestExists = FriendRequest::findByFromAndToId($friendRequestTo, $friendRequestFrom);
-        if ($incomingFriendRequestExists) {
-            $friendship = new Friendship(['user_1' => $friendRequestFrom, 'user_2' => $friendRequestTo]);
-            $friendship->create();
-            FriendRequest::destroy($incomingFriendRequestExists);
-
-            return $response;
-        }
-
-        $friendRequest = new FriendRequest([ 'from_id' => $friendRequestFrom, 'to_id' => $friendRequestTo ]);
-        $friendRequest->create();
-
-        $response->getBody()->write('Success!');
         return $response;
     }
 
@@ -59,7 +55,7 @@ class FriendRequestController extends BaseController
             return $response->withStatus(404);
         }
 
-        $friendRequest = FriendRequest::findByFromAndToId($friendRequestFrom, $friendRequestTo);
+        $friendRequest = FriendRequest::find($friendRequestFrom, $friendRequestTo);
 
         if (!$friendRequest) {
             return $response->withStatus(404);
