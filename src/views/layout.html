@@ -82,47 +82,76 @@
     posts.addEventListener('click', event => {
         const post = event.target.closest('[data-post-id]');
         if (!post) return;
-        if (event.target.classList.contains('like-post-button')) {
+        if (event.target.closest('.like-post-button')) {
             const postId = post.dataset.postId;
             if (!postId) return;
+            const buttonElement = event.target.closest('.like-post-button');
 
             fetch(`/posts/${postId}/likes`, {
                 method: 'POST'
             }).then(data => {
-                console.log(data);
+                console.log(data.status);
+                if (data.status === 200) {
+                    buttonElement.classList.add('unlike-post-button', 'btn-danger');
+                    buttonElement.classList.remove('like-post-button', 'btn-outline-danger');
+                    const likeCountElement = buttonElement.querySelector('.like-count');
+                    const currentLikeCount = Number(likeCountElement.textContent);
+                    likeCountElement.textContent = currentLikeCount + 1;
+                }
                 return data.text();
             }).then(data => {
                 console.log(data);
             })
-        } else if (event.target.classList.contains('like-comment-button')) {
-            const postId = event.target.dataset.likeTo;
+        } else if (event.target.closest('.like-comment-button')) {
+            const postId = event.target.closest('.like-comment-button').dataset.likeTo;
+            const buttonElement = event.target.closest('.like-comment-button');
 
             fetch(`/comments/${postId}/likes`, {
                 method: 'POST'
             }).then(data => {
-                console.log(data);
+                if (data.status === 200) {
+                    buttonElement.classList.add('unlike-comment-button', 'btn-danger');
+                    buttonElement.classList.remove('like-comment-button');
+                    const likeCountElement = buttonElement.querySelector('.like-count');
+                    const currentLikeCount = Number(likeCountElement.textContent);
+                    likeCountElement.textContent = currentLikeCount + 1;
+                }
                 return data.text();
             }).then(data => {
                 console.log(data);
             })
-        } else if (event.target.classList.contains('unlike-post-button')) {
-            const postId = event.target.dataset.postId;
+        } else if (event.target.closest('.unlike-post-button')) {
+            const postId = event.target.closest('.unlike-post-button').dataset.postId;
+            const buttonElement = event.target.closest('.unlike-post-button');
 
             fetch(`/posts/${postId}/likes`, {
                 method: 'delete'
             }).then(data => {
-                console.log(data);
+                if (data.status === 200) {
+                    buttonElement.classList.add('like-post-button', 'btn-outline-danger');
+                    buttonElement.classList.remove('unlike-post-button', 'btn-danger');
+                    const likeCountElement = buttonElement.querySelector('.like-count');
+                    const currentLikeCount = Number(likeCountElement.textContent);
+                    likeCountElement.textContent = currentLikeCount - 1;
+                }
                 return data.text();
             }).then(data => {
                 console.log(data);
             })
-        } else if (event.target.classList.contains('unlike-comment-button')) {
-            const postId = event.target.dataset.likeTo;            
+        } else if (event.target.closest('.unlike-comment-button')) {
+            const postId = event.target.closest('.unlike-comment-button').dataset.likeTo;
+            const buttonElement = event.target.closest('.unlike-comment-button');
 
             fetch(`/comments/${postId}/likes`, {
                 method: 'delete'
             }).then(data => {
-                console.log(data);
+                if (data.status === 200) {
+                    buttonElement.classList.add('like-comment-button');
+                    buttonElement.classList.remove('unlike-comment-button', 'btn-danger');
+                    const likeCountElement = buttonElement.querySelector('.like-count');
+                    const currentLikeCount = Number(likeCountElement.textContent);
+                    likeCountElement.textContent = currentLikeCount - 1;
+                }
                 return data.text();
             }).then(data => {
                 console.log(data);
